@@ -9,9 +9,15 @@ const state = {
         name: document.getElementById("card-name"),
         type: document.getElementById("card-type"),
     },
-    fieldsCards: {
+    fieldCards: {
         player: document.getElementById("player-field-card"),
         computer: document.getElementById("computer-field-card"),
+    },
+    playerSides : {
+    player1: "player-cards",
+    player1Box : document.querySelector("#player-cards"),
+    computer: "computer-cards",
+    computerBox : document.querySelector("#computer-cards"),
     },
     actions: {
         button: document.getElementById("next-duel"),
@@ -65,31 +71,48 @@ async function createCardImage(IdCard, fieldSide) {
 
 
     if (fieldSide === playerSides.player1) {
-         cardImage.addEventListener("mouseover", () => {
+        cardImage.addEventListener("mouseover", () => {
         drawSelectCard(IdCard);
     });
 
         cardImage.addEventListener("click", () => {
-            setCardsField(cardImage.getAttribute("data-id"));
-        });
+        setCardsField(cardImage.getAttribute("data-id"));
+    });
     }
 
    
     return cardImage;
 }
 
+
 async function setCardsField(cardId) {
     await removeAllCardsImagens();
 
     let computerCardId = await getRandomCardId();
 
-    state.fieldsCards.player.style.display = "block";
-    state.fieldsCards.computer.style.display = "block";
+    state.fieldCards.player.style.display = "block";
+    state.fieldCards.computer.style.display = "block";
 
-    state.fieldsCards.player.src = cardData[cardId];
-    state.fieldsCards.computer.src = cardData[computerCardId].img;
+    state.fieldCards.player.src = cardData[cardId].img;
+    state.fieldCards.computer.src = cardData[computerCardId].img;
+
+    let duelResults = await checkDuelResults(cardId, computerCardId);
+
+    // await updateScore();
+    // await drawButton(duelResults);
     
 }
+
+async function removeAllCardsImagens(){
+    let { computerBox, player1Box } = state.playerSides;
+    let imgElements = computerBox.querySelectorAll("img");
+    imgElements.forEach((img) => img.remove());
+
+    imgElements = player1Box.querySelectorAll("img");
+    imgElements.forEach((img) => img.remove());
+
+}
+
 async function drawSelectCard(index) {
     state.cardSprites.avatar.src = cardData[index].img;
     state.cardSprites.name.innerText = cardData[index].name;
